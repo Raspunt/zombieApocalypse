@@ -1,26 +1,33 @@
 package org.giga.zombieapocalypse.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
+import org.giga.zombieapocalypse.ZombieApocalypse;
 import org.giga.zombieapocalypse.waves.WaveManager;
 
-import static net.minecraft.server.command.CommandManager.literal;
 
 public class WaveInfoCommand implements ICommand {
-    private final WaveManager waveManager;
+
+    protected String literal = "waveinfo";
+
+    protected WaveManager waveManager;
 
     public WaveInfoCommand(WaveManager waveManager) {
         this.waveManager = waveManager;
     }
 
-    public void register() {
-        CommandRegistrationCallback.EVENT.register((dispatcher,registryAccess, environment) -> {
-            dispatcher.register(literal("waveinfo")
-                    .executes(context -> {
-                        return action(context);
-                    })
-            );
-        });
+    public void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
+        dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal(this.literal)
+                .executes(this::action)
+        );
+    }
+
+    private int action(CommandContext<ServerCommandSource> context) {
+        ZombieApocalypse.LOGGER.info("Ввёл команду");
+        return 0;
+    }
 }
