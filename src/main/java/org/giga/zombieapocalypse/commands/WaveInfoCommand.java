@@ -6,13 +6,13 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import org.giga.zombieapocalypse.ZombieApocalypse;
+import net.minecraft.text.Text;
 import org.giga.zombieapocalypse.waves.WaveManager;
 
 
 public class WaveInfoCommand implements ICommand {
 
-    protected String literal = "waveinfo";
+    protected String literal = "apocinfowave";
 
     protected WaveManager waveManager;
 
@@ -27,7 +27,8 @@ public class WaveInfoCommand implements ICommand {
     }
 
     private int action(CommandContext<ServerCommandSource> context) {
-        ZombieApocalypse.LOGGER.info("Ввёл команду");
-        return 0;
+        long ticksUntilNextWave = waveManager.getTicksUntilNextWave();
+        context.getSource().sendFeedback(() -> Text.literal("Ticks until next wave: " + ticksUntilNextWave), false);
+        return 1;
     }
 }

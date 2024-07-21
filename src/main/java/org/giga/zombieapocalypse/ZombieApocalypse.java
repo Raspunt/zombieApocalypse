@@ -1,6 +1,7 @@
 package org.giga.zombieapocalypse;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,10 @@ public class ZombieApocalypse implements ModInitializer {
         CommandManager commandManager = new CommandManager();
         commandManager.buildCommands(waveManager);
         commandManager.registerCommands();
+
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            waveManager.initialize(server);
+        });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> waveManager.onServerTick(server));
     }

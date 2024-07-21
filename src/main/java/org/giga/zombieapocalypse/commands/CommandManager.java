@@ -11,8 +11,9 @@ public class CommandManager {
     private final List<ICommand> commands = new ArrayList<>();
 
     public void buildCommands(WaveManager waveManager) {
-        ZombieApocalypse.LOGGER.info("Регистрация команд");
+        ZombieApocalypse.LOGGER.info("[ZombieWaves] Registration Commands");
         this.commands.add(new WaveInfoCommand(waveManager));
+        this.commands.add(new SetWaveCommand(waveManager));
     }
 
     public void registerCommands() {
