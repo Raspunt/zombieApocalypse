@@ -5,6 +5,9 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.world.GameMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +29,32 @@ public class ZombieWave {
 
     private void spawnZombies() {
         for (BlockPos pos : spawnPositions) {
-            ZombieEntity zombie = new ZombieEntity(world);
-            zombie.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-            world.spawnEntity(zombie);
-            zombies.add(zombie);
+            // Проверка на доступность спавн-позиции
+            if (isSpawnPositionValid(pos)) {
+                ZombieEntity zombie = new ZombieEntity(world);
+                zombie.refreshPositionAndAngles(pos, 0.0F, 0.0F);
+                world.spawnEntity(zombie);
+                zombies.add(zombie);
+            }
         }
     }
 
+    private boolean isSpawnPositionValid(BlockPos pos) {
+        // Проверка, что место для спавна свободно и находится на твердом блоке
+        BlockState blockStateBelow = world.getBlockState(pos.down());
+        boolean isGroundSolid = blockStateBelow.isSolidBlock(world, pos.down());
+
+        boolean isSpaceAboveClear = world.isAir(pos) && world.isAir(pos.up());
+
+        return isGroundSolid && isSpaceAboveClear;
+    }
+
     public void update() {
-        for (Entity zombie : zombies) {
-            if (zombie.isAlive()) {
-                ((ZombieEntity) zombie).getNavigation().startMovingTo(targetPlayer, 1.0);
+        if (targetPlayer.interactionManager.getGameMode() != GameMode.CREATIVE) {
+            for (Entity zombie : zombies) {
+                if (zombie.isAlive()) {
+                    ((ZombieEntity) zombie).setTarget(targetPlayer);
+                }
             }
         }
     }
